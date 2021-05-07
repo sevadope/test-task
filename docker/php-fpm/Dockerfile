@@ -31,7 +31,7 @@ RUN adduser --disabled-password --gecos '' --uid $USER_ID --gid 33 user
 USER user
 
 # Set up default directory
-WORKDIR /var/www/server
+WORKDIR /var/www/src
 
 EXPOSE 9000
 
