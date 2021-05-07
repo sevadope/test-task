@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+    php:
+        container_name: test_php
+
+        build:  docker/php-fpm/
+
+        volumes:
+            -  ./server:/var/www/server
+
+        depends_on:
+            -  postgres
+
+        env_file:
+            - .env
+
+    nginx:    
+        container_name: test_nginx
+
+        build:  docker/nginx/
+
+        volumes:       
+            - ./server:/var/www/server
+            - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./docker/nginx/sites/:/etc/nginx/sites-available
+            - ./docker/nginx/conf.d/:/etc/nginx/conf.d
+
+        depends_on:
+            - php
+
+        ports:  
+            - "80:80"
+            - "81:81"
+
+    postgres:  
+        container_name: test_postgres
+
+        build: docker/postgres/
+
+        volumes:
+            - database:/var/lib/postgresql/data
+            - ./docker/postgres/dumps/:/tmp/  
+
+        ports:  
+            - 54321:5432
+
+        environment:
+            - LC_ALL=C.UTF-8
+            - POSTGRES_DB=docker
+            - POSTGRES_USER=docker
+            - POSTGRES_PASSWORD=docker
+
+volumes:
+    database:
+        driver: local
